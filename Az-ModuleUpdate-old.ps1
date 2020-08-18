@@ -2,10 +2,6 @@
 [CmdletBinding(DefaultParameterSetName = 'plan')]
 Param
 (
-    [ValidateSet("az.*", "AzureAD", "AzureADPreview", "AWS.Tools.*")]
-    [String]
-    $module = "az.*",
-
     [Parameter(ParameterSetName = 'plan')]
     [switch]$plan,
     [Parameter(ParameterSetName = 'apply')]
@@ -82,7 +78,7 @@ function getModuleDictionary {
 # checking the Az modules 
 
 
-$searchString = $module
+$searchString = "az.*"
 $published_modules = find-module -Name $searchString
 $installed_modules = Get-InstalledModule -Name $searchString #az.*
 
@@ -95,13 +91,13 @@ $moduleChanges = compare-hashtables $installed_module_dictionary $published_modu
 
 
 if($plan) {
-    write-Output "`n<<SHOW>> The Following $($module) Module(s) are NEW and SHOULD BE Installed"
+    write-Output "`n<<SHOW>> The Following Az.* Module(s) are NEW and SHOULD BE Installed"
     foreach($newValue in $moduleChanges.newKeys.Keys){
         Write-Output "`tinstall-module -name $($newValue) -AllowClobber -Force"
     }
 
 
-    write-Output "`n<<SHOW>> The Following $($module) Module(s) are OUT OF DATE and SHOULD be Updated"
+    write-Output "`n<<SHOW>> The Following Az.* Module(s) are OUT OF DATE and SHOULD be Updated"
     foreach($newValue in $moduleChanges.newValues.keys){
         Write-Output "`tupdate-module -name $($newValue) -Force"
     }
@@ -109,14 +105,14 @@ if($plan) {
     
 if($apply){
 Write-Output "apply mode"
-    write-Output "`n<<APPLY>> The Following $($module) Module(s) are NEW and ARE BEING Installed"
+    write-Output "`n<<APPLY>> The Following Az.* Module(s) are NEW and ARE BEING Installed"
     foreach($newValue in $moduleChanges.newKeys.Keys){
         Write-Output "`tInvoke-Expression 'install-module -name $($newValue) -AllowClobber -Force'"
         Invoke-Expression "install-module -name $($newValue) -AllowClobber -Force"
     }
 
 
-    write-Output "`n<<APPLY>> The Following $($module) Module(s) are OUT OF DATE and ARE BEING Updated"
+    write-Output "`n<<APPLY>> The Following Az.* Module(s) are OUT OF DATE and ARE BEING Updated"
     foreach($newValue in $moduleChanges.newValues.keys){
         Write-Output "`tInvoke-Expression 'update-module -name $($newValue) -Force'"
         Invoke-Expression "update-module -name $($newValue) -Force"
